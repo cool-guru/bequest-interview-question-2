@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+      "target": "es5",                          // Target JavaScript version
+      "lib": ["dom", "dom.iterable", "esnext"],  // Library options for React & modern JS
+      "allowJs": true,                           // Allow JS files in your project
+      "skipLibCheck": true,                      // Skip type checking of declaration files
+      "esModuleInterop": true,                   // Allow default imports from CommonJS
+      "allowSyntheticDefaultImports": true,      // Support for default imports
+      "strict": true,                            // Enable strict type-checking options
+      "forceConsistentCasingInFileNames": true,  // Enforce consistent file name casing
+      "noFallthroughCasesInSwitch": true,        // Prevent errors in switch cases
+      "module": "esnext",                        // Use ES modules for import/export
+      "moduleResolution": "node",                // Resolve modules using Node.js
+      "resolveJsonModule": true,                 // Support for importing JSON files
+      "isolatedModules": true,                   // Isolate module-level scope
+      "jsx": "react-jsx"                         // Enable JSX support for React (React 17+)
+    },
+    "include": ["src"],                          // Include all files in the `src` directory
+    "exclude": ["node_modules", "**/*.test.tsx"] // Exclude unnecessary files
+  }
