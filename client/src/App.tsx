@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import crypto from "crypto-js";
 
 const API_URL = "http://localhost:8080";
 
@@ -19,43 +18,41 @@ function App() {
   };
 
   const updateData = async () => {
-    const dataHash = crypto.SHA256(data ?? "").toString();
-    await fetch(API_URL, {
+    if (!data) {
+      alert("Data is empty");
+      return;
+    }
+    
+    const response = await fetch(API_URL, {
       method: "POST",
-      body: JSON.stringify({ data, hash: dataHash }),
+      body: JSON.stringify({ data, hash }), // Sending data and hash to the server
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
     });
 
-    await getData();
+    if (response.ok) {
+      await getData(); // Get the updated data and hash
+    } else {
+      alert("Data tampering detected or invalid update!");
+    }
   };
 
   const verifyData = async () => {
-    const currentHash = crypto.SHA256(data ?? "").toString();
-    console.log('hash', hash);
-    console.log('currentHash', currentHash);
-    if (currentHash === hash) {
-      alert("Data is intact.");
+    const storedData = localStorage.getItem("backupData");
+    if (storedData && storedData === data) {
+      alert("Local data matches server data.");
     } else {
-      alert("Data has been tampered with!");
-      // Optionally, restore data from local storage or backup
-      const backupData = localStorage.getItem("backupData");
-      if (backupData) {
-        setData(backupData);
-        alert("Restored from backup.");
-      } else {
-        alert("No backup found.");
-      }
+      alert("Local data does not match server data. Fetch fresh data.");
+      await getData(); // Refresh the data from server
     }
   };
 
   // Backup the current data
   const backupData = () => {
-    console.log('data', data);
-    localStorage.setItem("backupData", data ?? "");
-    alert("Data backed up.");
+    localStorage.setItem("backupData", data || "");
+    alert("Data backed up locally.");
   };
 
   return (
