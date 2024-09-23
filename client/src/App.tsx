@@ -4,6 +4,7 @@ const API_URL = "http://localhost:8080";
 
 function App() {
   const [data, setData] = useState<string>();
+  const [hash, setHash] = useState<string>("");
 
   useEffect(() => {
     getData();
@@ -11,25 +12,47 @@ function App() {
 
   const getData = async () => {
     const response = await fetch(API_URL);
-    const { data } = await response.json();
+    const { data, hash } = await response.json();
     setData(data);
+    setHash(hash);
   };
 
   const updateData = async () => {
-    await fetch(API_URL, {
+    if (!data) {
+      alert("Data is empty");
+      return;
+    }
+    
+    const response = await fetch(API_URL, {
       method: "POST",
-      body: JSON.stringify({ data }),
+      body: JSON.stringify({ data, hash }), // Sending data and hash to the server
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
     });
 
-    await getData();
+    if (response.ok) {
+      await getData(); // Get the updated data and hash
+    } else {
+      alert("Data tampering detected or invalid update!");
+    }
   };
 
   const verifyData = async () => {
-    throw new Error("Not implemented");
+    const storedData = localStorage.getItem("backupData");
+    if (storedData && storedData === data) {
+      alert("Local data matches server data.");
+    } else {
+      alert("Local data does not match server data. Fetch fresh data.");
+      await getData(); // Refresh the data from server
+    }
+  };
+
+  // Backup the current data
+  const backupData = () => {
+    localStorage.setItem("backupData", data || "");
+    alert("Data backed up locally.");
   };
 
   return (
@@ -61,6 +84,9 @@ function App() {
         </button>
         <button style={{ fontSize: "20px" }} onClick={verifyData}>
           Verify Data
+        </button>
+        <button style={{ fontSize: "20px" }} onClick={backupData}>
+          Backup Data
         </button>
       </div>
     </div>
